@@ -3,28 +3,13 @@ from flask_socketio import SocketIO
 from forms import RegistrationForm, LoginForm
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/demo'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password''@localhost/socialnetworking'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = 'False'
+socialnetworking = SQLAlchemy(app)
 socketio = SocketIO(app)
-
-
-# class Database:
-#     def __init__(self):
-#         host = "127.0.0.1"
-#         user = "test"
-#         password = "password"
-#         db = "employees"
-#         self.con = pymysql.connect(host=host, user=user, password=password, db=db, cursorclass=pymysql.cursors.
-#                                    DictCursor)
-#         self.cur = self.con.cursor()
-#
-#     def list_employees(self):
-#         self.cur.execute("SELECT first_name, last_name, gender FROM employees LIMIT 50")
-#         result = self.cur.fetchall()
-#
 
 @app.route("/")
 def root():

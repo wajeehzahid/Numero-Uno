@@ -1,25 +1,61 @@
 from datetime import datetime
-from app import db
+from typing import Tuple
+from sqlalchemy import UniqueConstraint, PrimaryKeyConstraint
+
+from app import socialnetworking
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
-    password = db.Column(db.String(60), nullable=False)
-    posts = db.relationship('Post', backref='author', lazy=True)
-
-    def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
-
-
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+class Users(socialnetworking.Model):
+    user_id = socialnetworking.Column(socialnetworking.BIGINT, primary_key=True, nullable=False, autoincrement=True, )
+    name = socialnetworking.Column(socialnetworking.String(50), nullable=False)
+    email = socialnetworking.Column(socialnetworking.String(255), unique=True, nullable=False)
+    password = socialnetworking.Column(socialnetworking.String(255), nullable=False)
+    profile_picture_url = socialnetworking.Column(socialnetworking.String(255), nullable=False, default='')
+    Posts = socialnetworking.relationship('posts', backref='author', lazy=True)
 
     def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}')"
+        return f"Users('{self.username}', '{self.email}', '{self.image_file}')"
+
+
+class Posts(socialnetworking.Model):
+    post_id = socialnetworking.Column(socialnetworking.BIGINT, primary_key=True, nullable=False)
+    date_posted = socialnetworking.Column(socialnetworking.DateTime, nullable=False, default=datetime.utcnow)
+    content = socialnetworking.Column(socialnetworking.Text, nullable=False)
+    user_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                      nullable=False)
+
+    def __repr__(self):
+        return f"Posts('{self.title}', '{self.date_posted}')"
+
+
+class Likes(socialnetworking.Model):
+    user_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                      nullable=False)
+    post_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('posts.post_id'),
+                                      nullable=False)
+    __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'post_id', name='user_post'),)
+
+class Friends(socialnetworking.Model):
+    user_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                      nullable=False)
+    friend_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                        nullable=False)
+    __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'friend_id', name='user_friend'),)
+
+class Messages(socialnetworking.Model):
+    message_id = socialnetworking.Column(socialnetworking.BIGINT, nullable=False, autoincrement=True, primary_key=True)
+    content = socialnetworking.Column(socialnetworking.Text, nullable=False)
+    date_created = socialnetworking.Column(socialnetworking.DateTime, nullable=False, default=datetime.utcnow)
+    user_id_from = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                           nullable=False)
+    user_id_to = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                         nullable=False)
+
+class Comments(socialnetworking.Model):
+    comment_id = socialnetworking.Column(socialnetworking.BIGINT, nullable=False, autoincrement=True, primary_key=True)
+    user_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('users.user_id'),
+                                      nullable=False)
+    post_id = socialnetworking.Column(socialnetworking.BIGINT, socialnetworking.ForeignKey('posts.post_id'),
+                                      nullable=False)
+    content = socialnetworking.Column(socialnetworking.Text, nullable=False)
+    date_posted = socialnetworking.Column(socialnetworking.DateTime, nullable=False, default=datetime.utcnow)
