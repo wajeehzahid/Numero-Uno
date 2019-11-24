@@ -150,9 +150,12 @@ def messageReceived():
     print('message was received!!!')
 
 
-@socketio.on('my event')
+@socketio.on('my message')
 def handle_my_custom_event(json):
-    print('received my event: ' + str(json))
+    print('received message: ' + str(json))
+    message = Messages(content=json['message'], date_created=datetime.now(), user_id_from=11111, user_id_to=22222)
+    social_network.session.add(message)
+    social_network.session.commit()
     socketio.emit('my response', json, callback=messageReceived)
 
 
