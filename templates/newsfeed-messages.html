@@ -188,15 +188,6 @@ Chatroom | Send and Receive Messages
                     <div class="tab-pane" id="contact-6">
                       <div class="chat-body">
                       	<ul class="chat-message target">
-{#                      		<li class="left">#}
-{#                      			<img src="{{ url_for('static', filename='images/users/user-8.jpg') }}" alt="" class="profile-photo-sm pull-left" />#}
-{#                      			<div class="chat-item">#}
-{#                              <div class="chat-item-header">#}
-{#                              	<h5>Richard Bell</h5>#}
-{#                              	<small class="text-muted">2 days ago</small>#}
-{#                              </div>#}
-{#                                </div>#}
-{#                      		</li>#}
                             {%  for msg in messages %}
                                   <li class="right">
                                       <img src="{{ url_for('static', filename='images/users/user-1.jpg') }}" alt="" class="profile-photo-sm pull-right" />
