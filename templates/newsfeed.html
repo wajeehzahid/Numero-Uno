@@ -154,6 +154,32 @@ News Feed | Check what your friends are doing
 
             <div class="column">
               <div id="post-list">
+                  {% for post in posts %}
+                      <div class="post-content" id="{{ post.post_id }}">
+                          <div class="post-container">
+                            <img src="/static/images/users/user-3.jpg" alt="user" class="profile-photo-md pull-left" />
+                            <div class="post-detail">
+                              <div class="user-info">
+                                <h5><a href="timeline.html" class="profile-link">Sophia Lee {{ post.user_id }}</a></h5>
+                                <p class="text-muted">Updated her status about {{ post.date_posted }} mins ago</p>
+                              </div>
+                              <div class="reaction">
+                                <a class="btn text-green"><i class="icon ion-thumbsup"></i> {{ post.likes }} </a>
+                              </div>
+                              <div class="line-divider"></div>
+                              <div class="post-text">
+                                <p>{{ post.content }}</p>
+                              </div>
+                              <div class="line-divider"></div>
+                              <div class="post-comments"></div>
+                              <div class="post-comment">
+                                <img src="/static/images/users/user-1.jpg" alt="" class="profile-photo-sm" />
+                                <input type="text" class="form-control" placeholder="Post a comment">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                  {% endfor %}
               </div>
             </div>
 {#            <!-- Post Content#}
@@ -483,7 +509,7 @@ News Feed | Check what your friends are doing
               </div>
             </div>`;
             let list = document.querySelector("#post-list");
-            list.outerHTML += html;
+            list.innerHTML += html;
         }
 
     </script>
