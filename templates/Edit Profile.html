@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}" />
+    <link href="{{ url_for('static', filename='css/emoji.css') }}" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Nunito:300,400,700" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/owl.carousel.css') }}" rel="stylesheet" type="text/css" >
+    <link href="{{ url_for('static', filename='css/colorbox.css') }}" rel="stylesheet" type="text/css" >
+    <link href="{{ url_for('static', filename='css/bootstrap-select.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/fileinput.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/editprofile.css') }}" rel="stylesheet" type="text/css" >
+
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/fav.png') }}">
+
+    <title>{{ form.fname.data }}</title>
+</head>
+
+
+<body class="">
+
+<div class="page-wrapper">
+    
+    <header id="header">
+      <nav class="navbar navbar-default navbar-fixed-top menu">
+        <div class="container">
+
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('newsfeed') }}"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo" /></a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right main-menu">
+              <li class="dropdown"><a href="{{ url_for('newsfeed') }}">Home</a></li>
+              <li class="dropdown"><a href="{{ url_for('timeline') }}">Profile</a></li>
+              <li class="dropdown"><a href="{{ url_for('messages') }}">Messages</a></li>
+              <li class="dropdown"><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            </ul>
+            <form class="navbar-form navbar-right hidden-sm">
+              <div class="form-group">
+                <i class="icon ion-android-search"></i>
+                <input type="text" class="form-control" placeholder="Search friends, photos, videos">
+              </div>
+            </form>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container -->
+      </nav>
+    </header>
+
+
+
+
+    <div class="main">
+        <div class="main-inner">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4 col-lg-3">
+                        <div class="sidebar">
+                            <div class="widget">
+    <div class="user-photo">
+        <a href="#">
+            <img src="{{ image_file }}" alt="User Photo">
+            <span class="user-photo-action">Click here to reupload</span>
+        </a>
+    </div><!-- /.user-photo -->
+</div><!-- /.widget -->
+
+
+                            <div class="widget">
+
+    <ul class="menu-advanced">
+        <li><a href="{{ url_for('timeline') }}"><i class="fa fa-pencil"></i> Profile</a></li>
+        <li class="active"><a href="#"><i class="fa fa-user"></i> Edit Profile</a></li>
+        <li><a href="{{ url_for('editpassword') }}"><i class="fa fa-key"></i> Password</a></li>
+    </ul>
+</div><!-- /.widget -->
+
+                        </div><!-- /.sidebar -->
+                    </div><!-- /.col-* -->
+
+                    <div class="col-sm-8 col-lg-9">
+                        <div class="content">
+                            <div class="page-title">
+    <h1>Edit Profile</h1>
+</div><!-- /.page-title -->
+
+<div class="background-white p20 mb30">
+    <form method ="POST" action="">
+        {{ form.hidden_tag() }}
+    <h3 class="page-title">
+        Contact Information
+        <div class="form-group">
+                {{ form.submit(class="btn btn-primary btn-xs pull-right") }}
+        </div>
+    </h3>
+
+
+        <div class="row">
+            <div class="form-group col-sm-6">
+                <label>First Name</label>
+                {% if form.fname.errors %}
+                    {{ form.fname(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.fname.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.fname(class="form-control form-control-lg", placeholder="First Name") }}
+                {% endif %}
+            </div><!-- /.form-group -->
+
+            <div class="form-group col-sm-6">
+                 <label>Last Name</label>
+                 {% if form.lname.errors %}
+                    {{ form.lname(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.lname.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.lname(class="form-control form-control-lg", placeholder="Last Name") }}
+                {% endif %}
+             </div><!-- /.form-group -->
+
+            <div class="form-group col-sm-6">
+                <label>Email</label>
+                {% if form.email.errors %}
+                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email(class="form-control form-control-lg", placeholder="Email") }}
+                {% endif %}
+            </div><!-- /.form-group -->
+
+            <div class="form-group col-sm-6">
+                <label>Phone</label>
+                    {% if form.phone.errors %}
+                    {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.phone.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.phone(class="form-control form-control-lg", placeholder="Phone") }}
+                {% endif %}
+            </div><!-- /.form-group -->
+        </div><!-- /.row -->
+    </form>
+</div>
+
+<div class="background-white p20 mb30">
+    <h3 class="page-title">
+        Address
+        <div class="form-group">
+                {{ form.submit(class="btn btn-primary btn-xs pull-right") }}
+        </div>
+    </h3>
+
+    <div class="row">
+        <div class="form-group col-sm-6">
+            <label>Country</label>
+            {% if form2.country.errors %}
+                {{ form2.country(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form2.country.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form2.country(class="form-control form-control-lg", placeholder="Country") }}
+                {% endif %}
+        </div><!-- /.form-group -->
+
+        <div class="form-group col-sm-6">
+            <label>City</label>
+            {% if form2.city.errors %}
+                {{ form2.city(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form2.city.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form2.city(class="form-control form-control-lg", placeholder="City") }}
+                {% endif %}
+        </div><!-- /.form-group -->
+    </div><!-- /.row -->
+</div>
+
+                        <!--
+<div class="background-white p20 mb30">
+    <h3 class="page-title">
+        Biography
+
+        <a href="#" class="btn btn-primary btn-xs pull-right">Save</a>
+    </h3>
+
+    <textarea class="form-control" rows="7"></textarea>
+</div>
+-->
+                        </div><!-- /.content -->
+                    </div><!-- /.col-* -->
+                </div><!-- /.row -->
+            </div><!-- /.container -->
+        </div><!-- /.main-inner -->
+    </div><!-- /.main -->
+
+</div><!-- /.page-wrapper -->
+
+<!--preloader-->
+<div id="spinner-wrapper">
+    <div class="spinner"></div>
+  </div>
+
+<script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.sticky-kit.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.scrollbar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/editprofile.js') }}" type="text/javascript"></script>
+
+</body>
+</html>
