@@ -143,6 +143,7 @@ section .wrapper{
 	position: relative;
   font-weight: 600;
   outline: none;
+  float: left;
 }
 
 .btn-primary::before{
@@ -151,6 +152,7 @@ section .wrapper{
   position: absolute;
   width: 95%;
   height: 1px;
+  float: left;
   top: 1px;
   left: 0;
   right: 0;
