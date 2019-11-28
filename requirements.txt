@@ -22,4 +22,6 @@ requests
 six
 urllib3
 Werkzeug
+Flask-LoginManager
+Flask-Bcrypt
 Flask-OpenID-Python3

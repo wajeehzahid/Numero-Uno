@@ -29,24 +29,23 @@ Welcome
         <!-- Sign Up Form
         ================================================= -->
         <div class="sign-up-form">
-					<a href="{{  url_for('signup')  }}" class="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Numero Uno"/></a>
+					<a href="{{  url_for('signup')  }}" class="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Friend Finder"/></a>
 					<h2 class="text-white"></h2>
 					<div class="line-divider"></div>
 					<div class="form-wrapper">
 						<p class="signup-text">Signup Now</p>
 						<form method ="POST" action="">
+                            {{ form.hidden_tag() }}
 							<fieldset class="form-group">
-                               {{ form.hidden_tag() }}
-                               {% if form.name.errors %}
-                                   {{ form.name(class="form-control form-control-lg is-invalid") }}
+                               {% if form.fname.errors %}
+                                   {{ form.fname(class="form-control form-control-lg is-invalid") }}
                                    <div class="invalid-feedback">
-                                       {% for error in form.name.errors %}
+                                       {% for error in form.fname.errors %}
                                            <span>{{ error }}</span>
                                        {% endfor %}
                                    </div>
                                {% else %}
-                                   {{ form.hidden_tag() }}
-                                   {{ form.name(class="form-control form-control-lg", placeholder="Name") }}
+                                   {{ form.fname(class="form-control form-control-lg", placeholder="Name") }}
                                {% endif %}
                             </fieldset>
 							<fieldset class="form-group">
@@ -62,15 +61,41 @@ Welcome
                                {% endif %}
 							</fieldset>
 							<fieldset class="form-group">
-                                {{ form.password(class="form-control form-control-lg", placeholder="Password")  }}
+                               {% if form.password.errors %}
+                                   {{ form.password(class="form-control form-control-lg is-invalid") }}
+                                   <div class="invalid-feedback">
+                                       {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                       {% endfor %}
+                                   </div>
+                               {% else %}
+                                   {{ form.password(class="form-control form-control-lg", placeholder="Password")  }}
+                               {% endif %}
                             </fieldset>
                             <fieldset class="form-group">
-                                {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm Password") }}
+                                {% if form.confirm_password.errors %}
+                                   {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                                   <div class="invalid-feedback">
+                                       {% for error in form.confirm_password.errors %}
+                                        <span>{{ error }}</span>
+                                       {% endfor %}
+                                   </div>
+                               {% else %}
+                                   {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm Password")  }}
+                               {% endif %}
                             </fieldset>
                             <fieldset class="form-group">
-                                {{ form.phone(class="form-control form-control-lg", placeholder="Phone Number") }}
+                                {% if form.phone.errors %}
+                                   {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                                   <div class="invalid-feedback">
+                                       {% for error in form.phone.errors %}
+                                        <span>{{ error }}</span>
+                                       {% endfor %}
+                                   </div>
+                               {% else %}
+                                   {{ form.phone(class="form-control form-control-lg", placeholder="Phone Number")  }}
+                               {% endif %}
                             </fieldset>
-                            <p>By signing up you agree to the terms</p>
                                 {{ form.submit(class="btn btn-secondary") }}
 						</form>
 					</div>
