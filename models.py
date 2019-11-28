@@ -62,3 +62,7 @@ from app import db
 #                                     nullable=False)
 #     content = db.Column(db.Text, nullable=False)
 #     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+
+

@@ -8,12 +8,12 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, UserMixin, current_user, login_required
 from flask_bcrypt import Bcrypt
-from forms import RegistrationForm, LoginForm, UpdateAccountForm, LocationForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:Qwerty!99@localhost/social_network'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -35,32 +35,34 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.BIGINT, primary_key=True)
     fname = db.Column(db.String(20), nullable=False)
     lname = db.Column(db.String(20), default='')
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     phone = db.Column(db.String(11), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.png')
+    Post = db.relationship('Post', backref="author", lazy=True)
 
     def __repr__(self):
         return f"User('{self.fname}', '{self.lname}' '{self.email}', '{self.phone}', '{self.image_file}')"
 
 
 class Location(db.Model, UserMixin):
+    location_id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
     city = db.Column(db.String(20), default='')
     country = db.Column(db.String(20), default='')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
 
     def __repr__(self):
         return f"Location('{self.city}', '{self.country}')"
 
 
-class Posts(db.Model):
+class Post(db.Model):
     post_id = db.Column(db.BIGINT, primary_key=True, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
     likes = db.Column(db.BIGINT, nullable=False, default=0)
 
@@ -69,17 +71,17 @@ class Posts(db.Model):
 
 
 class Likes(db.Model):
-    user_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
-    post_id = db.Column(db.BIGINT, db.ForeignKey('posts.post_id'),
+    post_id = db.Column(db.BIGINT, db.ForeignKey('post.post_id'),
                         nullable=False)
     __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'post_id', name='user_post'),)
 
 
 class Friends(db.Model):
-    user_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
-    friend_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    friend_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                           nullable=False)
     __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'friend_id', name='user_friend'),)
 
@@ -88,20 +90,23 @@ class Messages(db.Model):
     message_id = db.Column(db.BIGINT, nullable=False, autoincrement=True, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id_from = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id_from = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                              nullable=False)
-    user_id_to = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id_to = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                            nullable=False)
 
 
 class Comments(db.Model):
     comment_id = db.Column(db.BIGINT, nullable=False, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
-    post_id = db.Column(db.BIGINT, db.ForeignKey('posts.post_id'),
+    post_id = db.Column(db.BIGINT, db.ForeignKey('post.post_id'),
                         nullable=False)
     content = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+from forms import RegistrationForm, LoginForm, UpdateAccountForm, LocationForm
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -141,7 +146,7 @@ def signup():
 @app.route('/newsfeed', methods=['GET', 'POST'])
 @login_required
 def newsfeed():
-    posts = Posts.query.all()
+    posts = Post.query.all()
     return render_template('newsfeed.html', posts=posts)
 
 
@@ -167,7 +172,7 @@ def addPost():
         'status': 'active',
         'event_name': 'created'
     }
-    post = Posts(date_posted=datetime.now(), content=data.get('content'), user_id=11111, likes=0)
+    post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=11111, likes=0)
     db.session.add(post)
     db.session.commit()
     pusher.trigger("blog", "post-added", data)
