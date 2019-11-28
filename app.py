@@ -31,15 +31,12 @@ pusher = Pusher(
     cluster='ap2',
     ssl=True
 )
-lm = LoginManager()
-lm.init_app(app)
-lm.login_view = 'login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 
-@lm.user_loader
-def load_user(id):
-    return Users.query.get(int(id))
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 @app.before_request
@@ -52,16 +49,11 @@ def before_request():
 
 
 class Friends(db.Model):
-    user_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
-    friend_id = db.Column(db.BIGINT, db.ForeignKey('users.user_id'),
+    friend_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                           nullable=False)
     __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'friend_id', name='user_friend'),)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 class User(db.Model, UserMixin):
@@ -123,14 +115,6 @@ class Likes(db.Model):
     __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'post_id', name='user_post'),)
 
 
-class Friends(db.Model):
-    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
-                        nullable=False)
-    friend_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
-                          nullable=False)
-    __table_args__: Tuple[PrimaryKeyConstraint] = (PrimaryKeyConstraint('user_id', 'friend_id', name='user_friend'),)
-
-
 class Messages(db.Model):
     message_id = db.Column(db.BIGINT, nullable=False, autoincrement=True, primary_key=True)
     content = db.Column(db.Text, nullable=False)
@@ -178,13 +162,13 @@ def after_login(resp):
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
         return redirect(url_for('login'))
-    user = Users.query.filter_by(email=resp.email).first()
+    user = User.query.filter_by(email=resp.email).first()
     if user is None:
         nickname = resp.nickname
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
-        nickname = Users.make_unique_nickname(nickname)
-        user = Users(nickname=nickname, email=resp.email)
+        nickname = User.make_unique_nickname(nickname)
+        user = User(nickname=nickname, email=resp.email)
         db.session.add(user)
         db.session.commit()
         # make the user follow him/herself
@@ -225,7 +209,7 @@ def newsfeed():
 @app.route('/follow/<username>')
 @login_required
 def friend(username):
-    user = Users.query.filter_by(name=username).first()
+    user = User.query.filter_by(name=username).first()
     if user is None:
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
@@ -245,7 +229,7 @@ def friend(username):
 @app.route('/unfollow/<username>')
 @login_required
 def unfriend(username):
-    user = Users.query.filter_by(name=username).first()
+    user = User.query.filter_by(name=username).first()
     if user is None:
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
