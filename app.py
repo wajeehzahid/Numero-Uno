@@ -4,7 +4,6 @@ from typing import Tuple
 
 from flask_openid import OpenID
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify, g, session
-from flask_login import login_required, login_user, LoginManager, current_user
 from flask_socketio import SocketIO
 from pusher import Pusher
 from sqlalchemy import PrimaryKeyConstraint
@@ -65,11 +64,15 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(11), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.png')
     Post = db.relationship('Post', backref="author", lazy=True)
+
     friend = db.relationship('User', secondary=Friends.__table__,
                              primaryjoin=(Friends.user_id == user_id),
                              secondaryjoin=(Friends.friend_id == user_id),
                              backref=db.backref('Friends', lazy='dynamic'),
                              lazy='dynamic')
+
+    def get_id(self):
+        return self.user_id
 
     def addFriend(self, user):
         if not self.is_friend(user):
@@ -89,7 +92,7 @@ class Location(db.Model, UserMixin):
     location_id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
     city = db.Column(db.String(20), default='')
     country = db.Column(db.String(20), default='')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'), nullable=False)
 
     def __repr__(self):
         return f"Location('{self.city}', '{self.country}')"
@@ -154,7 +157,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('newsfeed'))
         else:
             flash('Login Failed', 'danger')
-    return render_template('Login.html', title='Login', form=form)
+    return render_template('login.html', title='Login', form=form)
 
 
 @oid.after_login
@@ -198,7 +201,7 @@ def signup():
     return render_template('SignUp.html', title='SignUp', form=form)
 
 
-@app.route('/newsfeed', methods=['GET', 'POST'])
+@app.route('/newsfeed')
 @login_required
 def newsfeed():
     posts = Post.query.all()
@@ -279,23 +282,18 @@ def timeline():
 def addPost():
     data = {
         'id': "post-{}".format(uuid.uuid4().hex),
-        'name': request.form.get('name'),
+        'name': request.form.get('fname'),
         'content': request.form.get('content'),
         'likes': 0,
         'time': str(datetime.now()),
         'status': 'active',
         'event_name': 'created'
     }
-    post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=11111, likes=0)
-    db.session.add(post)
-    db.session.commit()
+    # post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=11111, likes=0)
+    # db.session.add(post)
+    # db.session.commit()
     pusher.trigger("blog", "post-added", data)
-    jsonify(data)
-
-
-@app.route('/messages')
-def messages():
-    return render_template('newsfeed-messages.html', title='Messages')
+    return jsonify(data)
 
 
 # update or delete post
@@ -325,26 +323,27 @@ def chat():
     return render_template('newsfeed-messages.html', messages=messages)
 
 
-@app.route('/images')
-def images():
-    return render_template('newsfeed-images.html', title='Images')
+# @app.route('/images')
+# def images():
+#     return render_template('newsfeed-images.html', title='Images')
 
 
 def messageReceived():
     print('message was received!!!')
 
 
-@app.route('/videos')
-def videos():
-    return render_template('newsfeed-videos.html', title='Videos')
+#
+# @app.route('/videos')
+# def videos():
+#     return render_template('newsfeed-videos.html', title='Videos')
 
 
 @socketio.on('my message')
 def handle_my_custom_event(json):
     print('received message: ' + str(json))
-    message = Messages(content=json['message'], date_created=datetime.now(), user_id_from=11111, user_id_to=22222)
-    db.session.add(message)
-    db.session.commit()
+    # message = Messages(content=json['message'], date_created=datetime.now(), user_id_from=11111, user_id_to=22222)
+    # db.session.add(message)
+    # db.session.commit()
     socketio.emit('my response', json, callback=messageReceived)
 
 

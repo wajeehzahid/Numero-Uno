@@ -98,63 +98,37 @@ News Feed | Check what your friends are doing
 
             <!-- Post Create Box
             ================================================= -->
-            <div class="create-post">
-            	<div class="row">
-            		<div class="col-md-7 col-sm-7">
-                  <div class="form-group">
-                    <img src="{{ url_for('static', filename='images/users/user-1.jpg') }}" alt="" class="profile-photo-md" />
-                    <textarea name="texts" id="exampleTextarea" cols="30" rows="1" class="form-control" placeholder="Write what you wish"></textarea>
-                  </div>
-                </div>
-            		<div class="col-md-5 col-sm-5">
-                  <div class="tools">
-                    <ul class="publishing-tools list-inline">
-                      <li><a href="#"><i class="ion-compose"></i></a></li>
-                      <li><a href="#"><i class="ion-images"></i></a></li>
-                      <li><a href="#"><i class="ion-ios-videocam"></i></a></li>
-                      <li><a href="#"><i class="ion-map"></i></a></li>
-                    </ul>
-                    <button class="btn btn-primary pull-right">Publish</button>
-                  </div>
-                </div>
-            	</div>
-            </div><!-- Post Create Box End-->
+            <section class="section">
+                        <div class="create-post container columns column">
+                            <form id="post-form" class="row">
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="form-group field">
+                                        <img src="/static/images/users/user-1.jpg" alt="" class="profile-photo-md" />
+                                        <div class="control">
+                                            <textarea class="textarea" name="content" id="exampleTextarea" cols="30" rows="3" placeholder="Write what you wish"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 col-sm-5">
+                                    <div class="tools">
+                                        <ul class="publishing-tools list-inline">
+                                            <li><a href="/static/#"><i class="ion-compose"></i></a></li>
+                                            <li><a href="/static/#"><i class="ion-images"></i></a></li>
+                                            <li><a href="/static/#"><i class="ion-ios-videocam"></i></a></li>
+                                            <li><a href="/static/#"><i class="ion-map"></i></a></li>
+                                        </ul>
+                                        <div class="field">
+                                            <button class="button is-primary btn btn-primary pull-right">Publish</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                    <!-- Post Create Box End-->
 
             <!-- Post Content
             ================================================= -->
-            <div class="post-content">
-              <img src="{{ url_for('static', filename='images/post-images/1.jpg') }}" alt="post-image" class="img-responsive post-image" />
-              <div class="post-container">
-                <img src="{{ url_for('static',filename='images/users/user-5.jpg') }}" alt="user" class="profile-photo-md pull-left" />
-                <div class="post-detail">
-                  <div class="user-info">
-                    <h5><a href="{{ url_for('timeline') }}" class="profile-link">Alexis Clark</a> <span class="following">following</span></h5>
-                    <p class="text-muted">Published a photo about 3 mins ago</p>
-                  </div>
-                  <div class="reaction">
-                    <a class="btn text-green"><i class="icon ion-thumbsup"></i> 13</a>
-                    <a class="btn text-red"><i class="fa fa-thumbs-down"></i> 0</a>
-                  </div>
-                  <div class="line-divider"></div>
-                  <div class="post-text">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. <i class="em em-anguished"></i> <i class="em em-anguished"></i> <i class="em em-anguished"></i></p>
-                  </div>
-                  <div class="line-divider"></div>
-                  <div class="post-comment">
-                    <img src="{{ url_for('static',filename='images/users/user-11.jpg') }}" alt="" class="profile-photo-sm" />
-                    <p><a href="{{url_for('timeline')}}" class="profile-link">Diana </a><i class="em em-laughing"></i> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud </p>
-                  </div>
-                  <div class="post-comment">
-                    <img src="{{ url_for('static',filename='images/users/user-4.jpg') }}" alt="" class="profile-photo-sm" />
-                    <p><a href="{{url_for('timeline')}}" class="profile-link">John</a> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud </p>
-                  </div>
-                  <div class="post-comment">
-                    <img src="{{ url_for('static', filename='images/users/user-1.jpg') }}" alt="" class="profile-photo-sm" />
-                    <input type="text" class="form-control" placeholder="Post a comment">
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <div class="column">
               <div id="post-list">
@@ -395,7 +369,7 @@ News Feed | Check what your friends are doing
               <div class="follow-user">
                 <img src="{{ url_for('static', filename='images/users/user-11.jpg') }}" alt="" class="profile-photo-sm pull-left" />
                 <div>
-                  <h5><a href="timeline.html">{{ user.name }}</a></h5>
+                  <h5><a href="timeline.html">{{ user.fname }} {{ user.lname }}</a></h5>
                   {% if user.id == g.user.id %}
                       <a href="{{ url_for('chat') }}">Edit your profile</a>
                   {% elif not g.user.is_following(user) %}
@@ -447,13 +421,13 @@ News Feed | Check what your friends are doing
     
     <!-- Scripts
     ================================================= -->
-{#    <script async defer src="/static/https://maps.googleapis.com/maps/api/js?key=AIzaSyCTMXfmDn0VlqWIyoOxK8997L-amWbUPiQ&callback=initMap"></script>#}
-   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTMXfmDn0VlqWIyoOxK8997L-amWbUPiQ&callback=initMap"></script>
+{#    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTMXfmDn0VlqWIyoOxK8997L-amWbUPiQ&callback=initMap"></script>#}
     <script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.sticky-kit.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
     <script>
         const pusher = new Pusher('ae6357ab6525e913a329', {
           cluster: 'ap2', // gotten from Pusher app dashboard
@@ -527,7 +501,7 @@ News Feed | Check what your friends are doing
               </div>
             </div>`;
             let list = document.querySelector("#post-list");
-            list.insertBefore(list.firstChild, html);
+            list.innerHTML += html;
         }
 
     </script>
