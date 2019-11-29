@@ -4,11 +4,16 @@
 
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="This is social network html5 template available in themeforest......" />
+    <meta name="description" content="This is social network site named Numero Uno" />
     <meta name="keywords" content="Social Network, Social Media, Make Friends, Newsfeed, Profile Page" />
     <meta name="robots" content="index, follow" />
+    <meta name="authors" content="Syeda Hafsah Awais, Alishan Maredia, Saad Ali Baig and Mohammad Wajeeh Zahid"/>
 
-    <title>{% block head %}{% endblock head %}</title>
+    {% if title %}
+        <title>Numero Uno - {{ title }}</title>
+    {% else %}
+        <title>Numero Uno</title>
+    {% endif %}
     {% block styles %}{% endblock styles %}
 
 </head>
@@ -17,13 +22,21 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
+                    <div style="position: fixed; z-index: 99999;bottom: 20px; right: 30px" class="alert alert-{{ category }} alert-dismissible fade in" role="alert">
                         {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    <script type="text/javascript">
+        setTimeout(function(){
+            $(".alert").hide();
+          }, 5000);
+    </script>
 </body>
 </html>

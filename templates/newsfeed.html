@@ -45,7 +45,7 @@ News Feed | Check what your friends are doing
             <ul class="nav navbar-nav navbar-right main-menu">
               <li class="dropdown"><a href="{{ url_for('newsfeed') }}">Home</a></li>
               <li class="dropdown"><a href="{{ url_for('timeline') }}">Profile</a></li>
-              <li class="dropdown"><a href="{{ url_for('messages') }}">Messages</a></li>
+              <li class="dropdown"><a href="{{ url_for('chat') }}">Messages</a></li>
               <li class="dropdown"><a href="{{ url_for('logout') }}">Sign Out</a></li>
             </ul>
             <form class="navbar-form navbar-right hidden-sm">
@@ -69,13 +69,13 @@ News Feed | Check what your friends are doing
     			<div class="col-md-3 static">
             <div class="profile-card">
             	<img src="{{ url_for('static', filename='images/users/user-1.jpg') }}" alt="user" class="profile-photo" />
-            	<h5><a href="{{ url_for('timeline') }}" class="text-white">Sarah Cruiz</a></h5>
+            	<h5><a href="{{ url_for('timeline') }}" class="text-white">{{ profile.fname }} {{ profile.lname }}</a></h5>
             	<a href="#" class="text-white"><i class="ion ion-android-person-add"></i> 1,299 followers</a>
             </div><!--profile card ends-->
             <ul class="nav-news-feed">
               <li><i class="icon ion-ios-paper"></i><div><a href="{{ url_for('newsfeed') }}">My Newsfeed</a></div></li>
               <li><i class="icon ion-ios-people-outline"></i><div><a href="{{ url_for('friends') }}">Friends</a></div></li>
-              <li><i class="icon ion-chatboxes"></i><div><a href="{{ url_for('messages') }}">Messages</a></div></li>
+              <li><i class="icon ion-chatboxes"></i><div><a href="{{ url_for('chat') }}">Messages</a></div></li>
               <li><i class="icon ion-images"></i><div><a href="{{ url_for('images') }}">Images</a></div></li>
               <li><i class="icon ion-ios-videocam"></i><div><a href="{{ url_for('videos') }}">Videos</a></div></li>
             </ul><!--news-feed links ends-->
@@ -138,8 +138,8 @@ News Feed | Check what your friends are doing
                             <img src="/static/images/users/user-3.jpg" alt="user" class="profile-photo-md pull-left" />
                             <div class="post-detail">
                               <div class="user-info">
-                                <h5><a href="{{url_for('timeline')}}" class="profile-link">Sophia Lee</a> <span class="following">following</span></h5>
-                                <p class="text-muted">Updated her status about {{ post.date_posted }} mins ago</p>
+                                <h5><a href="{{url_for('timeline')}}" class="profile-link">{{ profile.fname }} {{ profile.lname }}</a> <span class="following">following</span></h5>
+                                <p class="text-muted">Updated her status on {{ post.date_posted }}</p>
                               </div>
                               <div class="field">
                                   <button class="button is-primary btn btn-primary pull-right">Edit</button>
@@ -370,44 +370,16 @@ News Feed | Check what your friends are doing
                 <img src="{{ url_for('static', filename='images/users/user-11.jpg') }}" alt="" class="profile-photo-sm pull-left" />
                 <div>
                   <h5><a href="timeline.html">{{ user.fname }} {{ user.lname }}</a></h5>
-                  {% if user.id == g.user.id %}
-                      <a href="{{ url_for('chat') }}">Edit your profile</a>
-                  {% elif not g.user.is_following(user) %}
-                      <a href="{{ url_for('follow', nickname=user.nickname) }}">Follow</a>
+                  {% if user.user_id == g.user.user_id %}
+                      <a href="{{ url_for('editprofile') }}">Edit your profile</a>
+                  {% elif not g.user.is_friend(user) %}
+                      <a href="{{ url_for('befriend', user_id=user.user_id) }}">Add Friend</a>
                   {% else %}
-                      <a href="{{ url_for('unfollow', nickname=user.nickname) }}">Unfollow</a>
+                      <a href="{{ url_for('unfriend', user_id=user.user_id) }}">Unfriend</a>
                   {% endif %}
                 </div>
               </div>
             {% endfor %}
-{#              <div class="follow-user">#}
-{#                <img src="/static/images/users/user-12.jpg" alt="" class="profile-photo-sm pull-left" />#}
-{#                <div>#}
-{#                  <h5><a href="timeline.html">Cris Haris</a></h5>#}
-{#                  <a href="#" class="text-green">Add friend</a>#}
-{#                </div>#}
-{#              </div>#}
-{#              <div class="follow-user">#}
-{#                <img src="/static/images/users/user-13.jpg" alt="" class="profile-photo-sm pull-left" />#}
-{#                <div>#}
-{#                  <h5><a href="timeline.html">Brian Walton</a></h5>#}
-{#                  <a href="#" class="text-green">Add friend</a>#}
-{#                </div>#}
-{#              </div>#}
-{#              <div class="follow-user">#}
-{#                <img src="/static/images/users/user-14.jpg" alt="" class="profile-photo-sm pull-left" />#}
-{#                <div>#}
-{#                  <h5><a href="timeline.html">Olivia Steward</a></h5>#}
-{#                  <a href="#" class="text-green">Add friend</a>#}
-{#                </div>#}
-{#              </div>#}
-{#              <div class="follow-user">#}
-{#                <img src="/static/images/users/user-15.jpg" alt="" class="profile-photo-sm pull-left" />#}
-{#                <div>#}
-{#                  <h5><a href="timeline.html">Sophia Page</a></h5>#}
-{#                  <a href="#" class="text-green">Add friend</a>#}
-{#                </div>#}
-{#              </div>#}
             </div>
           </div>
     		</div>

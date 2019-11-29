@@ -45,7 +45,19 @@ Welcome
                                        {% endfor %}
                                    </div>
                                {% else %}
-                                   {{ form.fname(class="form-control form-control-lg", placeholder="Name") }}
+                                   {{ form.fname(class="form-control form-control-lg", placeholder="First Name") }}
+                               {% endif %}
+                            </fieldset>
+                            <fieldset class="form-group">
+                               {% if form.lname.errors %}
+                                   {{ form.lname(class="form-control form-control-lg is-invalid") }}
+                                   <div class="invalid-feedback">
+                                       {% for error in form.lname.errors %}
+                                           <span>{{ error }}</span>
+                                       {% endfor %}
+                                   </div>
+                               {% else %}
+                                   {{ form.lname(class="form-control form-control-lg", placeholder="Last Name") }}
                                {% endif %}
                             </fieldset>
 							<fieldset class="form-group">

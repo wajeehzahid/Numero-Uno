@@ -15,7 +15,7 @@ from flask_bcrypt import Bcrypt
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/socialnetworking'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:Qwerty!99@localhost/social_network'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -62,7 +62,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     phone = db.Column(db.String(11), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.png')
+    image_file = db.Column(db.String(250), nullable=False, default="{{ url_for('static', "
+                                                                   "filename='images/default.png') }}")
     Post = db.relationship('Post', backref="author", lazy=True)
 
     friend = db.relationship('User', secondary=Friends.__table__,
@@ -83,6 +84,13 @@ class User(db.Model, UserMixin):
         if self.is_friend(user):
             self.friend.remove(user)
             return self
+
+    def is_friend(self, user):
+        return self.friend.filter(Friends.friend_id == user.user_id).count() > 0
+
+    def friend_posts(self):
+        return Post.query.join(Friends, (Friends.friend_id == Post.user_id)).filter(
+            Friends.user_id == self.id).order_by(Post.date_posted.desc())
 
     def __repr__(self):
         return f"User('{self.fname}', '{self.lname}' '{self.email}', '{self.phone}', '{self.image_file}')"
@@ -105,6 +113,9 @@ class Post(db.Model):
     user_id = db.Column(db.BIGINT, db.ForeignKey('user.user_id'),
                         nullable=False)
     likes = db.Column(db.BIGINT, nullable=False, default=0)
+
+    # def get_name(self):
+    #     return Post.query
 
     def __repr__(self):
         return f"Posts('{self.title}', '{self.date_posted}')"
@@ -150,13 +161,14 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         new_user = User.query.filter_by(email=form.email.data).first()
-        if new_user and bcrypt.check_password_hash(new_user.password, form.password.data):
+        if new_user is None:
+            flash('Email not registered, Sign Up to get yourself registered.', 'danger')
+        elif new_user and bcrypt.check_password_hash(new_user.password, form.password.data):
             login_user(new_user, remember=form.remember.data)
             next_page = request.args.get('next')
-            flash('Login Successfully', 'success')
             return redirect(next_page) if next_page else redirect(url_for('newsfeed'))
         else:
-            flash('Login Failed', 'danger')
+            flash('Incorrect password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
@@ -175,7 +187,7 @@ def after_login(resp):
         db.session.add(user)
         db.session.commit()
         # make the user follow him/herself
-        db.session.add(user.follow(user))
+        db.session.add(user.addFriend(user))
         db.session.commit()
     remember_me = False
     if 'remember_me' in session:
@@ -196,7 +208,7 @@ def signup():
                         phone=form.phone.data)
         db.session.add(new_user)
         db.session.commit()
-        flash(f'Account created Successfully {form.fname.data}', 'success')
+        flash(f'Account created Successfully {form.fname.data} {form.lname.data}', 'success')
         return redirect(url_for('login'))
     return render_template('SignUp.html', title='SignUp', form=form)
 
@@ -205,65 +217,49 @@ def signup():
 @login_required
 def newsfeed():
     posts = Post.query.all()
-    users = User.query.all()
-    return render_template('newsfeed.html', users=users, posts=posts)
+    users = User.query.limit(5).all()
+    profile = User.query.get(g.user.get_id())
+    return render_template('newsfeed.html', profile=profile, users=users, posts=posts)
 
 
-@app.route('/follow/<username>')
+@app.route('/add/<user_id>')
 @login_required
-def friend(username):
-    user = User.query.filter_by(name=username).first()
+def befriend(user_id):
+    user = User.query.get(user_id)
     if user is None:
-        flash('User %s not found.' % username)
-        return redirect(url_for('index'))
+        flash('User not found.')
+        return redirect(url_for('newsfeed'))
     if user == g.user:
         flash('You can\'t befriend yourself!')
-        return redirect(url_for('users', name=username))
-    u = g.user.friend(user)
+        return redirect(url_for('newsfeed'))
+    u = g.user.addFriend(user)
     if u is None:
-        flash('Cannot be friends with ' + username + '.')
-        return redirect(url_for('users', name=username))
+        flash('Cannot be friends with this person')
+        return redirect(url_for('newsfeed'))
     db.session.add(u)
     db.session.commit()
-    flash('You are now friends with ' + username + '!')
-    return redirect(url_for('users', name=username))
+    flash('You are now friends with ' + user.fname + user.lname + '!', 'success')
+    return redirect(url_for('newsfeed'))
 
 
-@app.route('/unfollow/<username>')
+@app.route('/unfriend/<user_id>')
 @login_required
-def unfriend(username):
-    user = User.query.filter_by(name=username).first()
+def unfriend(user_id):
+    user = User.query.get(user_id)
     if user is None:
-        flash('User %s not found.' % username)
-        return redirect(url_for('index'))
+        flash('User not found.')
+        return redirect(url_for('newsfeed'))
     if user == g.user:
         flash('You can\'t unfriend yourself!')
-        return redirect(url_for('user', name=username))
-    u = g.user.unfollow(user)
+        return redirect(url_for('newsfeed'))
+    u = g.user.removeFriend(user)
     if u is None:
-        flash('Cannot unfriend ' + username + '.')
-        return redirect(url_for('users', name=username))
+        flash('Cannot unfriend this person')
+        return redirect(url_for('newsfeed'))
     db.session.add(u)
     db.session.commit()
-    flash('You have stopped following ' + username + '.')
-    return redirect(url_for('user', name=username))
-
-
-# @app.route('/edit', methods=['GET', 'POST'])
-# @login_required
-# def edit():
-#     form = EditForm(g.user.nickname)
-#     if form.validate_on_submit():
-#         g.user.nickname = form.nickname.data
-#         g.user.about_me = form.about_me.data
-#         db.session.add(g.user)
-#         db.session.commit()
-#         flash('Your changes have been saved.')
-#         return redirect(url_for('edit'))
-#     elif request.method != "POST":
-#         form.nickname.data = g.user.nickname
-#         form.about_me.data = g.user.about_me
-#     return render_template('timeline.html', form=form)
+    flash('You are no longer friends with ' + user.fname + user.lname + '!', 'danger')
+    return redirect(url_for('newsfeed'))
 
 
 @app.route('/logout')
@@ -289,9 +285,28 @@ def addPost():
         'status': 'active',
         'event_name': 'created'
     }
-    # post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=11111, likes=0)
-    # db.session.add(post)
-    # db.session.commit()
+    post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=g.user.user_id)
+    db.session.add(post)
+    db.session.commit()
+    pusher.trigger("blog", "post-added", data)
+    return jsonify(data)
+
+
+@app.route('/comment', methods=['GET', 'POST'])
+def addComment(post_id):
+    data = {
+        'id': "comment-{}".format(uuid.uuid4().hex),
+        'post_id': post_id,
+        'name': request.form.get('fname'),
+        'content': request.form.get('content'),
+        'likes': 0,
+        'time': str(datetime.now()),
+        'status': 'active',
+        'event_name': 'created'
+    }
+    post = Post(date_posted=datetime.now(), content=data.get('content'), user_id=g.user.user_id)
+    db.session.add(post)
+    db.session.commit()
     pusher.trigger("blog", "post-added", data)
     return jsonify(data)
 
@@ -302,9 +317,9 @@ def updatePost(id):
     data = {'id': id}
     if request.method == 'DELETE':
         data['event_name'] = 'deleted'
-        # post = Posts.query.all()
-        # db.session.delete(Posts)
-        # db.session.commit()
+        post = Post.query.all()
+        db.session.delete(post)
+        db.session.commit()
         pusher.trigger("blog", "post-deleted", data)
     else:
         data['event_name'] = 'deactivated'
@@ -323,27 +338,27 @@ def chat():
     return render_template('newsfeed-messages.html', messages=messages)
 
 
-# @app.route('/images')
-# def images():
-#     return render_template('newsfeed-images.html', title='Images')
+@app.route('/images')
+def images():
+    return render_template('newsfeed-images.html', title='Images')
 
 
 def messageReceived():
     print('message was received!!!')
 
 
-#
-# @app.route('/videos')
-# def videos():
-#     return render_template('newsfeed-videos.html', title='Videos')
+@app.route('/videos')
+def videos():
+    return render_template('newsfeed-videos.html', title='Videos')
 
 
 @socketio.on('my message')
 def handle_my_custom_event(json):
     print('received message: ' + str(json))
-    # message = Messages(content=json['message'], date_created=datetime.now(), user_id_from=11111, user_id_to=22222)
-    # db.session.add(message)
-    # db.session.commit()
+    message = Messages(content=json['message'], date_created=datetime.now(), user_id_from=g.user.user_id,
+                       user_id_to=2)
+    db.session.add(message)
+    db.session.commit()
     socketio.emit('my response', json, callback=messageReceived)
 
 

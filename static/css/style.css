@@ -245,8 +245,7 @@ ul li{
   height: 1px;
   border-top: 1px solid #e6e6e6;
   width: 100%;
-  margin: auto;
-  margin-bottom: 10px;
+  margin: auto auto 10px;
 }
 
 .map{
@@ -375,9 +374,8 @@ textarea{
   ==================================================*/
 
 #banner{
-	background: url(../images/bg/bg-1.jpg) fixed no-repeat;
-  background-position: center;
-	background-size: cover;
+  background: url(../images/bg/bg-1.jpg) no-repeat fixed center;
+  background-size: cover;
 	width: 100%;
 	min-height: 550px;
 	position: relative;
@@ -422,8 +420,7 @@ textarea{
   height: 1px;
   border-top: 1px solid rgba(255, 255, 255, .20);
   width: 180px;
-  margin: auto;
-  margin-bottom: 10px;
+  margin: auto auto 10px;
 }
 
 .sign-up-form .form-wrapper{
@@ -434,7 +431,7 @@ textarea{
 }
 
 .sign-up-form .form-wrapper .signup-text{
-  font-size: 15px;
+  font-size: 24px;
 }
 
 .sign-up-form .form-wrapper .form-group{
