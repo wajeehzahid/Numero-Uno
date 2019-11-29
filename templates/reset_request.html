@@ -35,42 +35,28 @@ Numero Uno
                     <h2 class="text-white"></h2>
                     <div class="line-divider"></div>
                     <div class="form-wrapper">
-                        <p class="signup-text">Login</p>
+                        <p class="signup-text">Reset Request</p>
                         <form method="POST" action="">
                         {{ form.hidden_tag() }}
                             <fieldset class="form-group">
-                                {% if form.email.errors %}
-                                   {{ form.email(class="form-control form-control-lg is-invalid") }}
-                                   <div class="invalid-feedback">
-                                       {% for error in form.email.errors %}
-                                           <span>{{ error }}</span>
-                                       {% endfor %}
-                                   </div>
-                               {% else %}
-                                   {{ form.email(class="form-control form-control-lg", placeholder="Email")  }}
-                               {% endif %}
+                                <div class="form-group">
+                                    {% if form.email.errors %}
+                                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.email(class="form-control form-control-lg", placeholder="Enter Email") }}
+                                    {% endif %}
+                                </div>
                             </fieldset>
-                            <fieldset class="form-group">
-                                {% if form.password.errors %}
-                                   {{ form.password(class="form-control form-control-lg is-invalid") }}
-                                   <div class="invalid-feedback">
-                                       {% for error in form.password.errors %}
-                                           <span>{{ error }}</span>
-                                       {% endfor %}
-                                   </div>
-                               {% else %}
-                                   {{ form.password(class="form-control form-control-lg", placeholder="Password")  }}
-                               {% endif %}
-                            </fieldset>
-                            <div class="form-group">
-                                {{ form.submit(class="btn btn-secondary") }}
-                            </div>
-                            <small class="text-muted ml-2">
-                                <a href="{{ url_for('reset_request') }}">Forgot Password</a>
-                            </small>
-                        </form>
+                        <div class="form-group">
+                            {{ form.submit(class="btn btn-secondary") }}
+                        </div>
+                    </form>
                     </div>
-                    <a href="{{ url_for('signup') }}">Create an account</a>
                     <img class="form-shadow" src="{{ url_for('static', filename='images/bottom-shadow.png') }}" alt="" />
                 </div>
                 <!-- Sign Up Form End -->

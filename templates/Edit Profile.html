@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/fav.png') }}">
 
-    <title>{{ form.fname.data }}</title>
+    <title>{{ form.fname.data + ' ' + form.lname.data }}</title>
 </head>
 
 
@@ -76,7 +76,7 @@
     <div class="user-photo">
         <a href="#">
             <img src="{{ image_file }}" alt="User Photo">
-            <span class="user-photo-action">Click here to reupload</span>
+           <!-- <span class="user-photo-action">Click here to reupload</span> -->
         </a>
     </div><!-- /.user-photo -->
 </div><!-- /.widget -->
@@ -101,10 +101,10 @@
 </div><!-- /.page-title -->
 
 <div class="background-white p20 mb30">
-    <form method ="POST" action="">
+    <form method ="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-    <h3 class="page-title">
-        Contact Information
+    <h3 class="page-title text-">
+        <div style="color:rgb(0,169,139)">Contact Information</div>
         <div class="form-group">
                 {{ form.submit(class="btn btn-primary btn-xs pull-right") }}
         </div>
@@ -168,59 +168,24 @@
                 {% endif %}
             </div><!-- /.form-group -->
         </div><!-- /.row -->
-    </form>
-</div>
 
-<div class="background-white p20 mb30">
-    <h3 class="page-title">
-        Address
-        <div class="form-group">
-                {{ form.submit(class="btn btn-primary btn-xs pull-right") }}
+    <h3 class="page-title text-green">
+        <div style="color:rgb(0,169,139)">Profile Picture</div>
+        <div class="row">
+            <br class="form-group">
+                {{ form.picture.label() }}
+                {{ form.picture(class="form-control-file btn btn-primary btn-xs") }}
+                {% if form.picture.errors %}
+                    {% for errors in form.picture.errors %}
+                        <span class="text-danger">{{ errors }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </h3>
-
-    <div class="row">
-        <div class="form-group col-sm-6">
-            <label>Country</label>
-            {% if form2.country.errors %}
-                {{ form2.country(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form2.country.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form2.country(class="form-control form-control-lg", placeholder="Country") }}
-                {% endif %}
-        </div><!-- /.form-group -->
-
-        <div class="form-group col-sm-6">
-            <label>City</label>
-            {% if form2.city.errors %}
-                {{ form2.city(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form2.city.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form2.city(class="form-control form-control-lg", placeholder="City") }}
-                {% endif %}
-        </div><!-- /.form-group -->
-    </div><!-- /.row -->
+</form>
 </div>
 
-                        <!--
-<div class="background-white p20 mb30">
-    <h3 class="page-title">
-        Biography
-
-        <a href="#" class="btn btn-primary btn-xs pull-right">Save</a>
-    </h3>
-
-    <textarea class="form-control" rows="7"></textarea>
-</div>
--->
                         </div><!-- /.content -->
                     </div><!-- /.col-* -->
                 </div><!-- /.row -->

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Home
+{{ form.fname.data + ' ' + form.lname.data }}
 {% endblock title %}
 
 {% block styles %}
@@ -65,7 +65,7 @@ Home
           ================================================= -->
     			<div class="col-md-3 static">
             <div class="profile-card">
-            	<img src="{{ url_for('static', filename='images/users/user-1.jpg') }}" alt="user" class="profile-photo" />
+            	<img src="{{ image_file }}" alt="user" class="profile-photo" />
             	<h5><a href="{{ url_for('timeline') }}" class="text-white">Sarah Cruiz</a></h5>
             	<a href="#" class="text-white"><i class="ion ion-android-person-add"></i> 1,299 followers</a>
             </div><!--profile card ends-->

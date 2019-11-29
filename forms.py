@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import Length, Email, EqualTo, InputRequired, ValidationError
+from wtforms.validators import Length, Email, EqualTo, InputRequired, ValidationError, DataRequired
 from app import User
 from flask_login import current_user
+from flask import flash
 from flask_wtf.file import FileAllowed, FileField
 
 class RegistrationForm(FlaskForm):
@@ -61,6 +62,28 @@ class UpdateAccountForm(FlaskForm):
 
 
 class LocationForm(FlaskForm):
-    country = StringField('Country', validators=[InputRequired()])
-    city = StringField('City', validators=[InputRequired()])
+    country = StringField('Country')
+    city = StringField('City')
     submit = SubmitField('Update')
+
+
+class UpdatePasswordForm(FlaskForm):
+    oldPassword = PasswordField('Old Password', validators=[InputRequired()])
+    newPassword = PasswordField('New Password', validators=[InputRequired()])
+    confirmPassword = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('newPassword')])
+    submit = SubmitField('Update')
+
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Reset')
+
+    def validate_email(self,email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with this email.')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[InputRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
